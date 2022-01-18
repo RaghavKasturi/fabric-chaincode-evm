@@ -8,6 +8,7 @@ package main
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -17,13 +18,13 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/permission"
 
+	pb "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	pb "github.com/hyperledger/fabric/protos/peer"
 
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/address"
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/eventmanager"
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/statemanager"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
 )
 
 //Permissions for all accounts (users & contracts) to send CallTx or SendTx to a contract
@@ -56,7 +57,17 @@ func (evmcc *EvmChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 		}
 	}
 
-	if len(args) != 2 {
+	// [atam 2020-06-11] The optional 3rd argument is for additional context that
+	// will be added to all events emitted during this invocation.
+	//
+	var ctx map[string]string
+	switch len(args) {
+	case 2: // ok
+	case 3:
+		if err := json.Unmarshal(args[2], &ctx); err != nil {
+			logger.Infof("Passed 3rd argument but cannot marshal into map %v", err)
+		}
+	default:
 		return shim.Error(fmt.Sprintf("expects 2 args, got %d : %s", len(args), string(args[0])))
 	}
 
@@ -86,7 +97,7 @@ func (evmcc *EvmChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 		return shim.Error(fmt.Sprintf("failed to decode input bytes: %s", err))
 	}
 
-	var gas uint64 = 10000
+	var gas uint64 = 1000000000
 	state := statemanager.NewStateManager(stub)
 	evmCache := evm.NewState(state, func(height uint64) []byte {
 		// This function is to be used to return the block hash
@@ -95,14 +106,14 @@ func (evmcc *EvmChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 		// affect execution if BLOCKHASH is not called.
 		panic("Block Hash shouldn't be called")
 	})
-	eventSink := &eventmanager.EventManager{Stub: stub}
+	eventSink := &eventmanager.EventManager{Stub: stub, Context: ctx}
 	nonce := crypto.Nonce(callerAddr, []byte(stub.GetTxID()))
 	vm := evm.NewVM(newParams(), callerAddr, nonce, evmLogger)
 
 	if calleeAddr == crypto.ZeroAddress {
-		logger.Debugf("Deploy contract")
+		logger.Infof("Deploy contract")
 
-		logger.Debugf("Contract nonce number = %d", nonce)
+		logger.Infof("Contract nonce number = %d", nonce)
 		contractAddr := crypto.NewContractAddress(callerAddr, nonce)
 		// Contract account needs to be created before setting code to it
 		evmCache.CreateAccount(contractAddr)
@@ -145,7 +156,7 @@ func (evmcc *EvmChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 		// return encoded hex bytes for human-readability
 		return shim.Success([]byte(hex.EncodeToString(contractAddr.Bytes())))
 	} else {
-		logger.Debugf("Invoke contract at %x", calleeAddr.Bytes())
+		logger.Infof("Invoke contract at %x", calleeAddr.Bytes())
 
 		calleeCode := evmCache.GetCode(calleeAddr)
 		if evmErr := evmCache.Error(); evmErr != nil {

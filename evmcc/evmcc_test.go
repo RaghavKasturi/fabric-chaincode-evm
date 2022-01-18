@@ -18,8 +18,8 @@ import (
 	"github.com/hyperledger/burrow/crypto"
 	"github.com/hyperledger/burrow/permission"
 	evm "github.com/hyperledger/fabric-chaincode-evm/evmcc"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/protos/msp"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-protos-go/msp"
 
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/address"
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/event"

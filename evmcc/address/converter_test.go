@@ -11,7 +11,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/hyperledger/fabric-chaincode-evm/evmcc/address"
-	"github.com/hyperledger/fabric/protos/msp"
+	"github.com/hyperledger/fabric-protos-go/msp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

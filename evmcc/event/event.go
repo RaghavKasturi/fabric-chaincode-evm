@@ -10,4 +10,5 @@ type Event struct {
 	Address string
 	Data    string
 	Topics  []string
+	Context map[string]string
 }
