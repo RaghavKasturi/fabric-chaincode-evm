@@ -1,7 +1,5 @@
 # Hyperledger Fabric EVM chaincode
 
-**This project has been archived for lack of interest within the community.**
-
 This is the project for the Hyperledger Fabric chaincode, integrating the
 Burrow EVM. At its essence, this project enables one to use the Hyperledger
 Fabric permissioned blockchain platform to interact with Ethereum smart
@@ -28,6 +26,8 @@ to use with Hyperledger Fabric.
 ![EndToEnd](EndToEnd.png)
 
 # Table of Contents
+- [Making Code Changes to EVMCC Chaincode](#Making-code-changes-to-evmcc-chaincode)
+- [Building the EVMCC Chaincode](#Building-the-evmcc-chaincode)
 - [Deploying the Fabric EVM Chaincode (EVMCC)](#Deploying-the-Fabric-EVM-Chaincode-(EVMCC))
 - [Running Fab3](#Running-Fab3)
 - [Tutorial](#Tutorial)
@@ -41,6 +41,25 @@ always interested in feedback and help in development and testing! For more
 information about contributing look below at the [Contributions](#Contributions)
 section.
 
+## Making Code Changes to EVMCC Chaincode
+
+ - Checkout the Repo [#fabric-chaincode-evm](https://github.com/RaghavKasturi/fabric-chaincode-evm)
+ - Setup [#Access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for your account
+ - Make the necessary code changes
+ - Navigate to the evmcc directory and run ```go mod vendor```
+ - In case of any issue with go mod cache being corrupt, then follow the below steps
+```
+          go clean -modcache
+          rm go.sum
+          go mod tidy
+```
+ - Now, the vendor directory is expected to have pulled-in all the required dependencies (In GO world - "vendoring" the dependencies is now complete)
+ - Commit and push these changes to the remote repository (**NOTE** : Essential to have the access token setup already)
+
+## Building the EVMCC Chaincode
+
+ - In order to build the chaincode zip file, navigate to scripts directory and run ```buildEvmccZip.sh```
+ - The "evmcc.zip" file will be created, which can be used as is for deploying 
 
 ## Deploying the Fabric EVM Chaincode (EVMCC)
 

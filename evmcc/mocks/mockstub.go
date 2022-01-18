@@ -5,8 +5,8 @@ import (
 	sync "sync"
 
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	shim "github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
+	shim "github.com/hyperledger/fabric-chaincode-go/shim"
+	peer "github.com/hyperledger/fabric-protos-go/peer"
 )
 
 type MockStub struct {
@@ -1007,6 +1007,25 @@ func (fake *MockStub) GetPrivateData(arg1 string, arg2 string) ([]byte, error) {
 		arg2 string
 	}{arg1, arg2})
 	fake.recordInvocation("GetPrivateData", []interface{}{arg1, arg2})
+	fake.getPrivateDataMutex.Unlock()
+	if fake.GetPrivateDataStub != nil {
+		return fake.GetPrivateDataStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getPrivateDataReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *MockStub) GetPrivateDataHash(arg1 string, arg2 string) ([]byte, error) {
+	fake.getPrivateDataMutex.Lock()
+	ret, specificReturn := fake.getPrivateDataReturnsOnCall[len(fake.getPrivateDataArgsForCall)]
+	fake.getPrivateDataArgsForCall = append(fake.getPrivateDataArgsForCall, struct {
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("GetPrivateDataHash", []interface{}{arg1, arg2})
 	fake.getPrivateDataMutex.Unlock()
 	if fake.GetPrivateDataStub != nil {
 		return fake.GetPrivateDataStub(arg1, arg2)
