@@ -26,8 +26,8 @@ to use with Hyperledger Fabric.
 ![EndToEnd](EndToEnd.png)
 
 # Table of Contents
-- [Making Code Changes to EVMCC Chaincode](#Making Code Changes to EVMCC Chaincode)
-- [Building the EVMCC Chaincode](#Building the EVMCC Chaincode)
+- [Making Code Changes to EVMCC Chaincode](#Making-code-changes-to-evmcc-chaincode)
+- [Building the EVMCC Chaincode](#Building-the-evmcc-chaincode)
 - [Deploying the Fabric EVM Chaincode (EVMCC)](#Deploying-the-Fabric-EVM-Chaincode-(EVMCC))
 - [Running Fab3](#Running-Fab3)
 - [Tutorial](#Tutorial)
